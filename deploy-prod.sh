@@ -105,12 +105,49 @@ log_info "准备环境配置..."
 if [ ! -f ".env.production" ]; then
   log_warn ".env.production 不存在，复制示例文件..."
   cp .env.production.example .env.production
-  log_warn "请编辑 .env.production 并填入正确的敏感信息（数据库密码、API 密钥等）"
-  echo "编辑命令: nano $SERVICE_DIR/.env.production"
-  exit 1
+  
+  echo ""
+  log_warn "⚠️  请编辑 .env.production 并填入必要的配置"
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "📋 必填项（只有 3 项）："
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "1. DB_PASSWORD          - 你设置的数据库密码"
+  echo "2. TENCENT_COS_SECRET_ID    - 腾讯云 COS Secret ID"
+  echo "3. TENCENT_COS_SECRET_KEY   - 腾讯云 COS Secret Key"
+  echo "   TENCENT_COS_BUCKET       - COS Bucket 名称"
+  echo "   TENCENT_COS_REGION       - COS 地域代码"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "其他配置项暂时保留默认值（可后续修改）"
+  echo ""
+  
+  read -p "按 Enter 打开编辑器，或按 Ctrl+C 取消: "
+  nano .env.production
+  
+  log_success "配置已更新"
+  echo ""
+else
+  log_info "检查必填配置项..."
+  
+  # 检查必填项
+  if ! grep -q "DB_PASSWORD=" ".env.production" || grep "DB_PASSWORD=your-" ".env.production" > /dev/null; then
+    log_error "DB_PASSWORD 未配置"
+    exit 1
+  fi
+  
+  if ! grep -q "TENCENT_COS_SECRET_ID=" ".env.production" || grep "TENCENT_COS_SECRET_ID=your-" ".env.production" > /dev/null; then
+    log_error "TENCENT_COS_SECRET_ID 未配置"
+    exit 1
+  fi
+  
+  if ! grep -q "TENCENT_COS_SECRET_KEY=" ".env.production" || grep "TENCENT_COS_SECRET_KEY=your-" ".env.production" > /dev/null; then
+    log_error "TENCENT_COS_SECRET_KEY 未配置"
+    exit 1
+  fi
+  
+  log_success "必填配置项已完成 ✓\n"
 fi
-
-log_success "环境配置已准备\n"
 
 # ============================================================================
 # 第 3 步：创建必要的目录和文件
