@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:16-alpine
+    container_name: pixel_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: pixel_db
+    ports:
+      - "5432:5432"
+    volumes:
+      # 数据持久化到本地
+      - postgres_data:/var/lib/postgresql/data
+      # 启动时自动运行初始化脚本
+      - ./app/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pixel_network
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: pixel_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      # 数据持久化到本地
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pixel_network
+    command: redis-server --appendonly yes
+
+  # FastAPI 服务（可选，用于本地开发）
+  # 注释掉这个，改用 uvicorn 手动启动可能更方便调试
+  # api:
+  #   build: .
+  #   container_name: pixel_api
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     DATABASE_URL: postgresql://postgres:password@postgres:5432/pixel_db
+  #     REDIS_URL: redis://redis:6379/0
+  #     ENVIRONMENT: development
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   volumes:
+  #     - .:/app
+  #   networks:
+  #     - pixel_network
+  #   command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  pixel_network:
+    driver: bridge
