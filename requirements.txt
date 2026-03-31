@@ -1,0 +1,54 @@
+# ── Web框架 ─────────────────────────────────────────────
+fastapi==0.116.0
+uvicorn[standard]==0.32.0
+python-multipart==0.0.20        # 文件上传支持
+
+# ── 数据库 ───────────────────────────────────────────────
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0                 # PostgreSQL 异步驱动
+alembic==1.14.0                 # 数据库迁移
+
+# ── 缓存/队列 ─────────────────────────────────────────────
+redis[hiredis]==5.2.1           # Redis 客户端（含 hiredis 加速）
+celery[redis]==5.4.0            # 任务队列
+flower==2.0.1                   # Celery 监控 UI
+
+# ── 配置 ─────────────────────────────────────────────────
+pydantic==2.10.3
+pydantic-settings==2.7.0
+
+# ── 认证 ─────────────────────────────────────────────────
+python-jose[cryptography]==3.3.0  # JWT
+passlib[bcrypt]==1.7.4            # 密码哈希
+httpx==0.28.1                     # OAuth 回调 HTTP 客户端
+
+# ── 对象存储 ─────────────────────────────────────────────
+boto3==1.35.88                  # Cloudflare R2 (S3兼容)
+Pillow==11.1.0                  # 图片处理/WebP压缩
+
+# ── AI 模型 SDK ──────────────────────────────────────────
+openai==1.59.3                  # OpenAI DALL-E
+# tongyi: 通过 HTTP 直接调用 (dashscope)
+dashscope==1.21.1               # 通义万相
+stability-sdk==0.8.5            # Stability AI
+
+# ── 支付 ─────────────────────────────────────────────────
+stripe==11.4.0                  # Stripe 支付
+wechatpayv3==1.2.6              # 微信支付 V3
+
+# ── 监控/可观测性 ─────────────────────────────────────────
+structlog==24.4.0               # 结构化日志
+sentry-sdk[fastapi]==2.19.2     # Sentry 错误追踪
+prometheus-client==0.21.1       # Prometheus 指标
+
+# ── 工具库 ───────────────────────────────────────────────
+python-magic==0.4.27            # 文件 MIME 类型检测（magic bytes）
+python-dotenv==1.0.1
+
+# ── 开发/测试 ─────────────────────────────────────────────
+pytest==8.3.4
+pytest-asyncio==0.25.0
+httpx==0.28.1                   # TestClient
+pytest-cov==6.0.0
+ruff==0.8.6
+mypy==1.14.0
